@@ -1,0 +1,1441 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <title>Stream Mon</title>
+    <link
+      rel="stylesheet"
+      href="../../node_modules/uplot/dist/uPlot.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="index.css"
+    />
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="logo">SW</div>
+          <div>
+            <strong>Stream Mon</strong>
+            <span>나눔교회 송출 모니터링</span>
+          </div>
+        </div>
+        <nav class="nav">
+          <button
+            class="nav-item active"
+            data-view="dashboard"
+            title="대시보드"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <rect
+                x="3"
+                y="3"
+                width="7"
+                height="9"
+              />
+              <rect
+                x="14"
+                y="3"
+                width="7"
+                height="5"
+              />
+              <rect
+                x="14"
+                y="12"
+                width="7"
+                height="9"
+              />
+              <rect
+                x="3"
+                y="16"
+                width="7"
+                height="5"
+              />
+            </svg>
+            <span>대시보드</span>
+          </button>
+          <button
+            class="nav-item"
+            data-view="scenario"
+            title="시나리오"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M8 6h13" />
+              <path d="M8 12h13" />
+              <path d="M8 18h13" />
+              <path d="M3 6h.01" />
+              <path d="M3 12h.01" />
+              <path d="M3 18h.01" />
+            </svg>
+            <span>시나리오</span>
+          </button>
+          <button
+            class="nav-item"
+            data-view="alerts"
+            title="알림 이력"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+              <path d="M10 21a2 2 0 0 0 4 0" />
+            </svg>
+            <span>알림 이력</span>
+          </button>
+          <button
+            class="nav-item"
+            data-view="settings"
+            title="설정"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="3"
+              />
+              <path
+                d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"
+              />
+            </svg>
+            <span>설정</span>
+          </button>
+        </nav>
+        <div class="sidebar-clock">
+          <strong id="sidebar-time">--:--</strong>
+          <span id="sidebar-date">----.--.--</span>
+        </div>
+      </aside>
+
+      <main class="main">
+        <section
+          class="view"
+          id="view-dashboard"
+        >
+          <header class="topbar">
+            <h1>송출 상태</h1>
+            <div class="connection-indicators">
+              <span
+                class="connection-indicator"
+                id="indicator-obs"
+                ><span class="dot"></span>OBS</span
+              >
+              <span
+                class="connection-indicator"
+                id="indicator-youtube"
+                ><span class="dot"></span>YouTube</span
+              >
+              <button
+                class="connection-indicator"
+                id="indicator-telegram"
+                type="button"
+              >
+                <span class="dot"></span>Telegram
+              </button>
+            </div>
+          </header>
+
+          <div class="grid">
+            <section class="panel panel-status">
+              <header class="panel-header">
+                <h2>전체 상태</h2>
+                <span
+                  class="panel-meta"
+                  id="status-updated"
+                  >-</span
+                >
+              </header>
+              <div class="tile-grid">
+                <div
+                  class="tile"
+                  data-tile="streaming"
+                >
+                  <div class="tile-name">방송</div>
+                  <div
+                    class="tile-value"
+                    data-key="streaming"
+                  >
+                    -
+                  </div>
+                </div>
+                <div
+                  class="tile"
+                  data-tile="recording"
+                >
+                  <div class="tile-name">녹화</div>
+                  <div
+                    class="tile-value"
+                    data-key="recording"
+                  >
+                    -
+                  </div>
+                </div>
+                <div
+                  class="tile"
+                  data-tile="bitrateKbps"
+                >
+                  <div class="tile-name">비트레이트</div>
+                  <div class="tile-value">
+                    <span data-key="bitrateKbps">-</span
+                    ><span class="unit">kbps</span>
+                  </div>
+                </div>
+                <div
+                  class="tile"
+                  data-tile="droppedFrames"
+                >
+                  <div class="tile-name">드롭 프레임</div>
+                  <div
+                    class="tile-value"
+                    data-key="droppedFrames"
+                  >
+                    -
+                  </div>
+                </div>
+                <div
+                  class="tile"
+                  data-tile="renderSkippedFrames"
+                >
+                  <div class="tile-name">스킵 프레임</div>
+                  <div
+                    class="tile-value"
+                    data-key="renderSkippedFrames"
+                  >
+                    -
+                  </div>
+                </div>
+                <div
+                  class="tile"
+                  data-tile="cpuUsage"
+                >
+                  <div class="tile-name">OBS CPU</div>
+                  <div class="tile-value">
+                    <span data-key="cpuUsage">-</span
+                    ><span class="unit">%</span>
+                  </div>
+                </div>
+                <div
+                  class="tile"
+                  data-tile="memoryUsageMb"
+                >
+                  <div class="tile-name">OBS 메모리</div>
+                  <div class="tile-value">
+                    <span data-key="memoryUsageMb">-</span
+                    ><span class="unit">MB</span>
+                  </div>
+                </div>
+                <div
+                  class="tile"
+                  data-tile="scene"
+                >
+                  <div class="tile-name">현재 Scene</div>
+                  <div
+                    class="tile-value"
+                    data-key="scene"
+                  >
+                    -
+                  </div>
+                </div>
+                <div
+                  class="tile"
+                  data-tile="live"
+                >
+                  <div class="tile-name">YouTube 라이브</div>
+                  <div
+                    class="tile-value"
+                    data-key="live"
+                  >
+                    -
+                  </div>
+                </div>
+                <div
+                  class="tile"
+                  data-tile="concurrentViewers"
+                >
+                  <div class="tile-name">시청자 수</div>
+                  <div
+                    class="tile-value"
+                    data-key="concurrentViewers"
+                  >
+                    -
+                  </div>
+                </div>
+                <div
+                  class="tile"
+                  data-tile="broadcastStatus"
+                >
+                  <div class="tile-name">방송 상태</div>
+                  <div
+                    class="tile-value"
+                    data-key="broadcastStatus"
+                  >
+                    -
+                  </div>
+                </div>
+                <div
+                  class="tile"
+                  data-tile="activeLiveChatId"
+                >
+                  <div class="tile-name">채팅 활성</div>
+                  <div
+                    class="tile-value"
+                    data-key="activeLiveChatId"
+                  >
+                    -
+                  </div>
+                </div>
+                <div
+                  class="tile"
+                  data-tile="healthStatus"
+                >
+                  <div class="tile-name">YouTube Status</div>
+                  <div
+                    class="tile-value"
+                    data-key="healthStatus"
+                  >
+                    -
+                  </div>
+                </div>
+                <div
+                  class="tile"
+                  data-tile="streamStatus"
+                >
+                  <div class="tile-name">스트림 상태</div>
+                  <div
+                    class="tile-value"
+                    data-key="streamStatus"
+                  >
+                    -
+                  </div>
+                </div>
+                <div
+                  class="tile"
+                  data-tile="configurationIssues"
+                >
+                  <div class="tile-name">설정 이슈</div>
+                  <div
+                    class="tile-value"
+                    data-key="configurationIssues"
+                  >
+                    -
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel panel-chart">
+              <header class="panel-header">
+                <h2>비트레이트 & 드롭 프레임</h2>
+                <span class="panel-meta">최근 5분</span>
+              </header>
+              <div
+                class="chart-container"
+                id="bitrate-chart"
+              ></div>
+            </section>
+
+            <section class="panel panel-audio">
+              <header class="panel-header">
+                <h2>오디오 레벨</h2>
+                <span class="panel-meta">실시간</span>
+              </header>
+              <div class="audio-meter">
+                <div
+                  class="lufs-status"
+                  id="lufs-status"
+                >
+                  <span>LUFS</span>
+                  <strong id="lufs-short-term">수신 대기</strong>
+                  <small id="lufs-updated">-</small>
+                </div>
+                <div class="meter-row">
+                  <span class="meter-label">L</span>
+                  <div class="meter-bar">
+                    <div
+                      class="meter-fill"
+                      id="meter-l"
+                      style="width: 0%"
+                    ></div>
+                  </div>
+                  <span
+                    class="meter-db"
+                    id="meter-l-db"
+                    >-∞ dB</span
+                  >
+                </div>
+                <div class="meter-row">
+                  <span class="meter-label">R</span>
+                  <div class="meter-bar">
+                    <div
+                      class="meter-fill"
+                      id="meter-r"
+                      style="width: 0%"
+                    ></div>
+                  </div>
+                  <span
+                    class="meter-db"
+                    id="meter-r-db"
+                    >-∞ dB</span
+                  >
+                </div>
+              </div>
+            </section>
+
+            <section class="panel panel-detail">
+              <header class="panel-header">
+                <h2>현재 송출</h2>
+              </header>
+              <dl
+                class="detail-list"
+                id="current-broadcast"
+              >
+                <dt>YouTube 제목</dt>
+                <dd data-key="title">-</dd>
+                <dt>방송 URL</dt>
+                <dd data-key="url">-</dd>
+                <dt>채팅 ID</dt>
+                <dd data-key="activeLiveChatId">-</dd>
+                <dt>방송 상태</dt>
+                <dd data-key="broadcastStatus">-</dd>
+                <dt>YT 데이터 모드</dt>
+                <dd id="yt-mode">-</dd>
+                <dt>설정 이슈 상세</dt>
+                <dd id="config-issues-detail">-</dd>
+                <dt>마지막 OBS 갱신</dt>
+                <dd id="last-obs-ts">-</dd>
+                <dt>마지막 YT 갱신</dt>
+                <dd id="last-yt-ts">-</dd>
+              </dl>
+            </section>
+
+            <section class="panel panel-log">
+              <header class="panel-header">
+                <h2>알림 이벤트</h2>
+                <span
+                  class="panel-meta"
+                  id="alert-count"
+                  >0건</span
+                >
+              </header>
+              <ul
+                id="alert-log"
+                class="alert-log"
+              ></ul>
+            </section>
+          </div>
+        </section>
+
+        <section
+          class="view"
+          id="view-scenario"
+          hidden
+        >
+          <header class="topbar">
+            <div>
+              <h1>스트리밍 체크</h1>
+              <p class="topbar-subtitle">
+                순서를 수동으로 넘기며 순서에 따른 스트리밍 상태를 체크합니다.
+              </p>
+            </div>
+            <div class="connection-indicators">
+              <span
+                class="connection-indicator"
+                id="scenario-indicator-obs"
+                ><span class="dot"></span>OBS</span
+              >
+              <span
+                class="connection-indicator"
+                id="scenario-indicator-youtube"
+                ><span class="dot"></span>YouTube</span
+              >
+              <button
+                class="connection-indicator"
+                id="scenario-indicator-telegram"
+                type="button"
+              >
+                <span class="dot"></span>Telegram
+              </button>
+              <button
+                class="btn btn-ghost"
+                id="scenario-edit-open"
+                type="button"
+              >
+                시나리오 편집
+              </button>
+            </div>
+          </header>
+
+          <div class="scenario-layout">
+            <section class="panel scenario-check-panel">
+              <header class="panel-header">
+                <h2>예배 진행 체크</h2>
+                <span
+                  class="panel-meta"
+                  id="scenario-summary"
+                  >-</span
+                >
+              </header>
+              <div
+                class="scenario-check-grid"
+                id="scenario-check-grid"
+              ></div>
+            </section>
+
+            <section class="panel scenario-live-panel">
+              <header class="panel-header">
+                <h2>현재 상태</h2>
+                <span class="panel-meta">실시간</span>
+              </header>
+              <div class="scenario-signal-grid">
+                <div class="scenario-signal">
+                  <span>OBS 송출</span>
+                  <strong id="scenario-signal-streaming">-</strong>
+                </div>
+                <div class="scenario-signal">
+                  <span>YouTube Live</span>
+                  <strong id="scenario-signal-live">-</strong>
+                </div>
+                <div class="scenario-signal">
+                  <span>현재 Scene</span>
+                  <strong id="scenario-signal-scene">-</strong>
+                </div>
+                <div class="scenario-signal">
+                  <span>녹화</span>
+                  <strong id="scenario-signal-recording">-</strong>
+                </div>
+                <div class="scenario-signal">
+                  <span>비트레이트</span>
+                  <strong id="scenario-signal-bitrate">-</strong>
+                </div>
+                <div class="scenario-signal">
+                  <span>Short-term LUFS</span>
+                  <strong id="scenario-signal-lufs">-</strong>
+                </div>
+              </div>
+            </section>
+
+            <section class="scenario-stage-panel">
+              <div class="stage-current">
+                <span class="stage-label">현재 진행 단계</span>
+                <strong id="scenario-stage-title">예배 준비</strong>
+                <span id="scenario-stage-note"
+                  >방송 시작 전 준비 상태를 확인합니다.</span
+                >
+              </div>
+              <div
+                class="stage-rail"
+                id="scenario-stage-rail"
+              ></div>
+            </section>
+
+            <section class="panel scenario-log-panel">
+              <header class="panel-header">
+                <h2>알림 로그</h2>
+                <span
+                  class="panel-meta"
+                  id="scenario-alert-count"
+                  >0건</span
+                >
+              </header>
+              <ul
+                id="scenario-alert-log"
+                class="alert-log"
+              ></ul>
+            </section>
+          </div>
+        </section>
+
+        <section
+          class="view"
+          id="view-alerts"
+          hidden
+        >
+          <header class="topbar">
+            <div>
+              <h1>알림 이력</h1>
+              <p class="topbar-subtitle">모든 알림을 시간순으로 정렬합니다.</p>
+            </div>
+            <div class="filters">
+              <select
+                id="alerts-filter-severity"
+                class="alerts-filter"
+              >
+                <option value="">전체</option>
+                <option value="긴급">긴급</option>
+                <option value="오류">오류</option>
+                <option value="알림">알림</option>
+              </select>
+              <span
+                class="panel-meta"
+                id="alerts-history-count"
+                >0건</span
+              >
+              <button
+                id="alerts-history-clear"
+                class="btn btn-ghost"
+                type="button"
+              >
+                이력 지우기
+              </button>
+            </div>
+          </header>
+
+          <section class="panel alerts-history-panel">
+            <ul
+              id="alerts-history-log"
+              class="alert-log alert-history-log"
+            ></ul>
+            <p
+              class="alerts-history-empty"
+              id="alerts-history-empty"
+              hidden
+            >
+              아직 받은 알림이 없습니다.
+            </p>
+          </section>
+        </section>
+
+        <section
+          class="view"
+          id="view-settings"
+          hidden
+        >
+          <header class="topbar">
+            <h1>설정</h1>
+            <div class="filters">
+              <span
+                class="settings-feedback"
+                id="settings-feedback"
+              ></span>
+              <button
+                id="settings-reset"
+                class="btn btn-ghost"
+                type="button"
+              >
+                되돌리기
+              </button>
+              <button
+                id="settings-save"
+                class="btn btn-primary"
+                type="button"
+              >
+                저장
+              </button>
+            </div>
+          </header>
+
+          <div class="settings-content">
+            <section class="settings-section">
+              <h2>기본 설정</h2>
+
+              <div class="settings-subsection">
+                <h3>앱 동작</h3>
+                <div class="settings-grid">
+                  <label class="span2 inline">
+                    <input
+                      id="cfg-autostart"
+                      type="checkbox"
+                    />
+                    <span>Windows 시작 시 자동 실행</span>
+                  </label>
+                  <label class="span2 inline">
+                    <input
+                      data-cfg="app.minimizeToTrayOnClose"
+                      type="checkbox"
+                    />
+                    <span>창 닫기 시 트레이로 숨기기</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="settings-subsection">
+                <h3>
+                  모바일 모니터링
+                  <span
+                    class="oauth-badge"
+                    id="mobile-server-badge"
+                    ><span class="dot"></span><span id="mobile-server-label">확인 중</span></span
+                  >
+                </h3>
+                <div class="settings-grid">
+                  <label class="span2 inline">
+                    <input
+                      data-cfg="mobile.enabled"
+                      type="checkbox"
+                    />
+                    <span>모바일 모니터링 사용</span>
+                  </label>
+                  <label class="span2"
+                    >접속 주소<input
+                      id="mobile-url"
+                      type="text"
+                      readonly
+                      placeholder="저장 후 표시됩니다"
+                  /></label>
+                </div>
+                <div class="mobile-pairing">
+                  <div class="mobile-pin-card">
+                    <span>페어링 PIN</span>
+                    <strong id="mobile-pairing-pin">------</strong>
+                    <small id="mobile-pairing-expiry">PIN 없음</small>
+                  </div>
+                  <div class="mobile-device-list">
+                    <div class="mobile-device-list-header">
+                      <strong>등록된 기기</strong>
+                      <span id="mobile-device-count">0대</span>
+                    </div>
+                    <ul id="mobile-device-list"></ul>
+                  </div>
+                </div>
+                <div class="settings-row-actions">
+                  <span
+                    class="settings-feedback"
+                    id="mobile-feedback"
+                  ></span>
+                  <button
+                    id="mobile-refresh"
+                    class="btn btn-ghost"
+                    type="button"
+                  >
+                    새로고침
+                  </button>
+                  <button
+                    id="mobile-clear-devices"
+                    class="btn btn-ghost"
+                    type="button"
+                  >
+                    기기 초기화
+                  </button>
+                  <button
+                    id="mobile-generate-pin"
+                    class="btn btn-primary"
+                    type="button"
+                  >
+                    PIN 생성
+                  </button>
+                </div>
+              </div>
+
+              <div class="settings-subsection">
+                <h3>OBS WebSocket</h3>
+                <div class="settings-grid">
+                  <label
+                    >호스트<input
+                      data-cfg="obs.host"
+                      type="text"
+                      placeholder="127.0.0.1"
+                  /></label>
+                  <label
+                    >포트<input
+                      data-cfg="obs.port"
+                      type="number"
+                      placeholder="4455"
+                  /></label>
+                  <label class="span2"
+                    >비밀번호<input
+                      data-cfg="obs.password"
+                      type="password"
+                      placeholder="OBS WebSocket 비밀번호"
+                  /></label>
+                </div>
+              </div>
+
+              <div class="settings-subsection">
+                <h3>
+                  YouTube 연결
+                  <span
+                    class="oauth-badge"
+                    id="yt-oauth-badge"
+                    ><span
+                      class="dot"
+                      id="yt-oauth-dot"
+                    ></span
+                    ><span id="yt-oauth-label">미연결</span></span
+                  >
+                </h3>
+                <div class="settings-grid">
+                  <label class="span2"
+                    >Client ID<input
+                      id="yt-oauth-client-id"
+                      type="text"
+                      placeholder="xxxxx.apps.googleusercontent.com"
+                  /></label>
+                  <label class="span2"
+                    >Client Secret<input
+                      id="yt-oauth-client-secret"
+                      type="password"
+                      placeholder="GOCSPX-..."
+                  /></label>
+                </div>
+                <div class="settings-row-actions">
+                  <span
+                    class="settings-feedback"
+                    id="yt-oauth-feedback"
+                  ></span>
+                  <button
+                    id="yt-oauth-import"
+                    class="btn btn-ghost"
+                    type="button"
+                  >
+                    JSON 가져오기
+                  </button>
+                  <button
+                    id="yt-diagnose"
+                    class="btn btn-ghost"
+                    type="button"
+                  >
+                    연결 진단
+                  </button>
+                  <button
+                    id="yt-oauth-disconnect"
+                    class="btn btn-ghost"
+                    type="button"
+                    hidden
+                  >
+                    연결 해제
+                  </button>
+                  <button
+                    id="yt-oauth-connect"
+                    class="btn btn-primary"
+                    type="button"
+                  >
+                    Google 연결
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            <section class="settings-section">
+              <h2>알림 채널</h2>
+
+              <div class="settings-subsection">
+                <h3>카카오 채널 알림톡 (SOLAPI)</h3>
+                <div class="settings-grid">
+                  <label class="span2 inline">
+                    <input
+                      data-cfg="notify.kakaoBiz.enabled"
+                      type="checkbox"
+                    />
+                    <span>활성화</span>
+                  </label>
+                  <label
+                    >API Key<input
+                      data-cfg="notify.kakaoBiz.apiKey"
+                      type="text"
+                      placeholder="SOLAPI API Key"
+                  /></label>
+                  <label
+                    >API Secret<input
+                      data-cfg="notify.kakaoBiz.apiSecret"
+                      type="password"
+                      placeholder="SOLAPI API Secret"
+                  /></label>
+                  <label
+                    >채널 연동 ID<input
+                      data-cfg="notify.kakaoBiz.pfId"
+                      type="text"
+                      placeholder="KA01PF..."
+                  /></label>
+                  <label
+                    >템플릿 ID<input
+                      data-cfg="notify.kakaoBiz.templateId"
+                      type="text"
+                      placeholder="KA01TP..."
+                  /></label>
+                  <label
+                    >발신번호<input
+                      data-cfg="notify.kakaoBiz.from"
+                      type="text"
+                      placeholder="등록된 발신번호"
+                  /></label>
+                  <label class="span2"
+                    >수신번호 목록<input
+                      data-cfg="notify.kakaoBiz.recipients"
+                      type="text"
+                      placeholder="01012345678, 01098765432"
+                  /></label>
+                </div>
+                <details class="settings-advanced">
+                  <summary>카카오 고급 옵션</summary>
+                  <div class="settings-grid">
+                    <label
+                      >템플릿 변수명<input
+                        data-cfg="notify.kakaoBiz.variableName"
+                        type="text"
+                        placeholder="#{message}"
+                    /></label>
+                    <label class="inline">
+                      <input
+                        data-cfg="notify.kakaoBiz.disableSms"
+                        type="checkbox"
+                      />
+                      <span>알림톡 실패 시 문자 대체 발송 안 함</span>
+                    </label>
+                  </div>
+                </details>
+                <div class="settings-row-actions">
+                  <button
+                    class="btn btn-ghost test-channel"
+                    data-channel="kakaoBiz"
+                    type="button"
+                  >
+                    테스트 전송
+                  </button>
+                </div>
+              </div>
+
+              <div class="settings-subsection">
+                <h3>Discord 웹훅</h3>
+                <div class="settings-grid">
+                  <label class="span2 inline">
+                    <input
+                      data-cfg="notify.discord.enabled"
+                      type="checkbox"
+                    />
+                    <span>활성화</span>
+                  </label>
+                  <label class="span2"
+                    >Webhook URL<input
+                      data-cfg="notify.discord.webhookUrl"
+                      type="text"
+                      placeholder="https://discord.com/api/webhooks/..."
+                  /></label>
+                </div>
+                <div class="settings-row-actions">
+                  <button
+                    class="btn btn-ghost test-channel"
+                    data-channel="discord"
+                    type="button"
+                  >
+                    테스트 전송
+                  </button>
+                </div>
+              </div>
+
+              <div class="settings-subsection">
+                <h3>Telegram 봇</h3>
+                <div class="settings-grid">
+                  <label class="span2 inline">
+                    <input
+                      data-cfg="notify.telegram.enabled"
+                      type="checkbox"
+                    />
+                    <span>활성화</span>
+                  </label>
+                  <label class="span2"
+                    >Bot Token<input
+                      data-cfg="notify.telegram.botToken"
+                      type="text"
+                      placeholder="123456:ABC-..."
+                  /></label>
+                  <label class="span2"
+                    >Chat IDs<textarea
+                      data-cfg="notify.telegram.chatIds"
+                      rows="4"
+                      placeholder="봇과 대화를 시작한 사람들의 Chat ID를 줄마다 입력"
+                    ></textarea>
+                  </label>
+                </div>
+                <details class="settings-advanced">
+                  <summary>Telegram 고급 옵션</summary>
+                  <div class="settings-grid">
+                    <label class="span2 inline">
+                      <input
+                        data-cfg="notify.telegram.autoDiscover"
+                        type="checkbox"
+                      />
+                      <span>신규 Chat ID 자동 등록</span>
+                    </label>
+                  </div>
+                </details>
+                <div class="settings-row-actions">
+                  <button
+                    class="btn btn-ghost"
+                    id="telegram-load-chats"
+                    type="button"
+                  >
+                    Chat ID 모두 찾기
+                  </button>
+                  <button
+                    class="btn btn-ghost test-channel"
+                    data-channel="telegram"
+                    type="button"
+                  >
+                    테스트 전송
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            <section class="settings-section">
+              <h2>경보 기준</h2>
+              <div class="settings-grid">
+                <label
+                  >오디오 무음 시간 (초)<input
+                    data-cfg="rules.audioSilenceSeconds"
+                    type="number"
+                    min="1"
+                    step="1"
+                /></label>
+                <label
+                  >오디오 무음 임계값 (dBFS)<input
+                    data-cfg="rules.audioSilenceDb"
+                    type="number"
+                    step="1"
+                /></label>
+                <label class="span2 inline">
+                  <input
+                    data-cfg="rules.lufsEnabled"
+                    type="checkbox"
+                  />
+                  <span>Short-term LUFS 알림</span>
+                </label>
+                <label
+                  >너무 큼 기준 (LUFS)<input
+                    data-cfg="rules.lufsHighThreshold"
+                    type="number"
+                    step="0.1"
+                /></label>
+                <label
+                  >너무 작음 기준 (LUFS)<input
+                    data-cfg="rules.lufsLowThreshold"
+                    type="number"
+                    step="0.1"
+                /></label>
+                <label
+                  >최소 비트레이트 (kbps)<input
+                    data-cfg="rules.bitrateMinKbps"
+                    type="number"
+                    min="0"
+                    step="100"
+                /></label>
+                <label
+                  >최대 드롭률 (%)<input
+                    data-cfg="rules.droppedFramePctMax"
+                    type="number"
+                    min="0"
+                    step="0.1"
+                /></label>
+              </div>
+            </section>
+
+            <section class="settings-section">
+              <h2>고급 설정</h2>
+
+              <details class="settings-advanced">
+                <summary>모바일 네트워크</summary>
+                <div class="settings-grid">
+                  <label class="span2 inline">
+                    <input
+                      data-cfg="mobile.discoveryEnabled"
+                      type="checkbox"
+                    />
+                    <span>자동탐색(mDNS/Bonjour) 사용</span>
+                  </label>
+                  <label
+                    >모바일 API 포트<input
+                      data-cfg="mobile.port"
+                      type="number"
+                      min="1024"
+                      max="65535"
+                      step="1"
+                  /></label>
+                  <label
+                    >서비스 타입<input
+                      id="mobile-service-type"
+                      type="text"
+                      readonly
+                      value="_streamwatcher._tcp.local"
+                  /></label>
+                  <label class="span2"
+                    >서버 ID<input
+                      id="mobile-server-id"
+                      type="text"
+                      readonly
+                  /></label>
+                </div>
+              </details>
+
+              <details class="settings-advanced">
+                <summary>YouTube API 키 모드</summary>
+                <div class="settings-grid">
+                  <label class="span2"
+                    >API 키<input
+                      data-cfg="youtube.apiKey"
+                      type="text"
+                      placeholder="YouTube Data API v3 키"
+                  /></label>
+                  <label class="span2"
+                    >채널 ID<input
+                      data-cfg="youtube.channelId"
+                      type="text"
+                      placeholder="UC..."
+                  /></label>
+                  <label class="span2"
+                    >Redirect URI<input
+                      id="yt-oauth-redirect"
+                      type="text"
+                      value="http://127.0.0.1:53682/oauth/google"
+                  /></label>
+                </div>
+              </details>
+
+              <details class="settings-advanced">
+                <summary>수집 주기와 LUFS 수신</summary>
+                <div class="settings-grid">
+                  <label
+                    >OBS 폴링 주기 (ms)<input
+                      data-cfg="obs.pollIntervalMs"
+                      type="number"
+                      min="200"
+                      step="100"
+                  /></label>
+                  <label
+                    >YouTube 폴링 주기 (ms)<input
+                      data-cfg="youtube.pollIntervalMs"
+                      type="number"
+                      min="5000"
+                      step="1000"
+                  /></label>
+                  <label class="span2 inline">
+                    <input
+                      data-cfg="lufs.enabled"
+                      type="checkbox"
+                    />
+                    <span>LUFS UDP 수신</span>
+                  </label>
+                  <label
+                    >LUFS 수신 주소<input
+                      data-cfg="lufs.host"
+                      type="text"
+                      placeholder="0.0.0.0"
+                  /></label>
+                  <label
+                    >LUFS 수신 포트<input
+                      data-cfg="lufs.port"
+                      type="number"
+                      min="1"
+                      max="65535"
+                      step="1"
+                  /></label>
+                </div>
+              </details>
+
+              <details class="settings-advanced">
+                <summary>알림 감지 지연과 쿨다운</summary>
+                <div class="settings-grid">
+                  <label
+                    >무음 감지 지연 (초)<input
+                      data-cfg="rules.audioSilenceStartupDelayMs"
+                      data-scale="1000"
+                      type="number"
+                      min="0"
+                      step="1"
+                  /></label>
+                  <label
+                    >무음 쿨다운 (초)<input
+                      data-cfg="rules.audioSilenceCooldownMs"
+                      data-scale="1000"
+                      type="number"
+                      min="0"
+                      step="1"
+                  /></label>
+                  <label
+                    >LUFS 지속 시간 (초)<input
+                      data-cfg="rules.lufsDurationSeconds"
+                      type="number"
+                      min="1"
+                      step="1"
+                  /></label>
+                  <label
+                    >LUFS 감지 지연 (초)<input
+                      data-cfg="rules.lufsStartupDelayMs"
+                      data-scale="1000"
+                      type="number"
+                      min="0"
+                      step="1"
+                  /></label>
+                  <label
+                    >LUFS 복구 여유 (LU)<input
+                      data-cfg="rules.lufsRecoveryMargin"
+                      type="number"
+                      min="0"
+                      step="0.1"
+                  /></label>
+                  <label
+                    >LUFS 쿨다운 (초)<input
+                      data-cfg="rules.lufsCooldownMs"
+                      data-scale="1000"
+                      type="number"
+                      min="0"
+                      step="1"
+                  /></label>
+                  <label
+                    >비트 감지 지연 (초)<input
+                      data-cfg="rules.bitrateStartupDelayMs"
+                      data-scale="1000"
+                      type="number"
+                      min="0"
+                      step="1"
+                  /></label>
+                  <label
+                    >비트레이트 쿨다운 (초)<input
+                      data-cfg="rules.bitrateCooldownMs"
+                      data-scale="1000"
+                      type="number"
+                      min="0"
+                      step="1"
+                  /></label>
+                  <label
+                    >드롭 감지 구간 (초)<input
+                      data-cfg="rules.droppedFrameWindowSeconds"
+                      type="number"
+                      min="1"
+                      step="1"
+                  /></label>
+                  <label
+                    >최소 드롭 프레임<input
+                      data-cfg="rules.droppedFrameMinFrames"
+                      type="number"
+                      min="0"
+                      step="1"
+                  /></label>
+                  <label
+                    >드롭 감지 지연 (초)<input
+                      data-cfg="rules.droppedFrameStartupDelayMs"
+                      data-scale="1000"
+                      type="number"
+                      min="0"
+                      step="1"
+                  /></label>
+                  <label
+                    >드롭 알림 쿨다운 (초)<input
+                      data-cfg="rules.droppedFrameCooldownMs"
+                      data-scale="1000"
+                      type="number"
+                      min="0"
+                      step="1"
+                  /></label>
+                </div>
+              </details>
+
+              <details class="settings-advanced">
+                <summary>오디오 피크 알림</summary>
+                <div class="settings-grid">
+                  <label class="span2 inline">
+                    <input
+                      data-cfg="rules.audioPeakEnabled"
+                      type="checkbox"
+                    />
+                    <span>dBFS 피크 알림</span>
+                  </label>
+                  <label
+                    >오디오 피크 임계값 (dBFS)<input
+                      data-cfg="rules.audioPeakDb"
+                      type="number"
+                      step="0.5"
+                  /></label>
+                  <label
+                    >피크 쿨다운 (초)<input
+                      data-cfg="rules.audioPeakCooldownMs"
+                      data-scale="1000"
+                      type="number"
+                      min="1"
+                      step="0.5"
+                  /></label>
+                </div>
+              </details>
+            </section>
+          </div>
+        </section>
+
+        <footer class="bottombar">
+          <span
+            id="boot-status"
+            class="boot-status"
+            >초기화 중...</span
+          >
+          <div class="bottom-actions">
+            <button
+              id="telegram-badge"
+              class="notify-badge"
+              type="button"
+            >
+              <span
+                class="dot"
+                id="telegram-dot"
+              ></span>
+              <span id="telegram-label">메신저 미설정</span>
+            </button>
+            <span class="version">v0.1.2</span>
+          </div>
+        </footer>
+      </main>
+    </div>
+
+    <div
+      class="modal-backdrop"
+      id="scenario-modal"
+      hidden
+    >
+      <div class="modal scenario-modal">
+        <header class="modal-header">
+          <h3>시나리오 편집</h3>
+          <button
+            class="modal-close"
+            id="scenario-modal-close"
+            type="button"
+            aria-label="닫기"
+          >
+            ×
+          </button>
+        </header>
+        <div class="modal-body">
+          <p class="modal-hint">
+            각 단계마다 필요한 블럭만 켭니다. 단계가 넘어간 뒤 5초 동안은
+            시나리오 알림을 보내지 않고, 5초 후 소스/오디오/녹화 상태를
+            확인합니다.
+          </p>
+          <div class="scenario-editor-toolbar">
+            <button
+              id="scenario-add-stage"
+              class="btn btn-ghost"
+              type="button"
+            >
+              단계 추가
+            </button>
+          </div>
+          <div
+            id="scenario-editor"
+            class="scenario-editor"
+          ></div>
+          <div
+            class="modal-status"
+            id="scenario-editor-status"
+          ></div>
+        </div>
+        <footer class="modal-footer">
+          <button
+            id="scenario-reset-default"
+            class="btn btn-ghost"
+            type="button"
+          >
+            기본값
+          </button>
+          <button
+            id="scenario-save"
+            class="btn btn-primary"
+            type="button"
+          >
+            저장
+          </button>
+        </footer>
+      </div>
+    </div>
+
+    <!-- 카카오 연결 모달 -->
+    <div
+      class="modal-backdrop"
+      id="kakao-modal"
+      hidden
+    >
+      <div class="modal">
+        <header class="modal-header">
+          <h3>카카오톡 연결</h3>
+          <button
+            class="modal-close"
+            id="kakao-modal-close"
+            type="button"
+            aria-label="닫기"
+          >
+            ×
+          </button>
+        </header>
+        <div class="modal-body">
+          <p class="modal-hint">
+            Kakao Developers Console에서 앱을 생성한 후 REST API 키와 Redirect
+            URI를 입력하세요. Redirect URI는 콘솔의 "카카오 로그인 → Redirect
+            URI"에 사전 등록되어 있어야 합니다.
+          </p>
+          <div class="form-row">
+            <label for="kakao-rest-key">REST API 키</label>
+            <input
+              id="kakao-rest-key"
+              type="text"
+              autocomplete="off"
+              placeholder="예: 1a2b3c4d5e6f..."
+            />
+          </div>
+          <div class="form-row">
+            <label for="kakao-redirect">Redirect URI</label>
+            <input
+              id="kakao-redirect"
+              type="text"
+              autocomplete="off"
+              value="https://localhost/oauth/kakao"
+            />
+          </div>
+          <div
+            class="modal-status"
+            id="kakao-status-text"
+          ></div>
+        </div>
+        <footer class="modal-footer">
+          <button
+            id="kakao-disconnect"
+            class="btn btn-ghost"
+            type="button"
+            hidden
+          >
+            연결 해제
+          </button>
+          <button
+            id="kakao-test"
+            class="btn btn-ghost"
+            type="button"
+            hidden
+          >
+            테스트 메시지
+          </button>
+          <button
+            id="kakao-connect"
+            class="btn btn-primary"
+            type="button"
+          >
+            연결
+          </button>
+        </footer>
+      </div>
+    </div>
+
+    <script src="../../node_modules/uplot/dist/uPlot.iife.min.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

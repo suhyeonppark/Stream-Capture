@@ -1,0 +1,109 @@
+{
+  "obs": {
+    "host": "127.0.0.1",
+    "port": 4455,
+    "password": "여기에-OBS-WebSocket-비밀번호",
+    "pollIntervalMs": 1000
+  },
+  "youtube": {
+    "apiKey": "여기에-YouTube-Data-API-키",
+    "channelId": "여기에-본인-채널-ID (UC...)",
+    "pollIntervalMs": 15000,
+    "oauth": {
+      "clientId": "",
+      "clientSecret": "",
+      "redirectUri": "http://127.0.0.1:53682/oauth/google",
+      "accessToken": "",
+      "refreshToken": "",
+      "tokenAcquiredAt": 0,
+      "expiresIn": 0,
+      "expiryDate": 0,
+      "clientJsonPath": ""
+    }
+  },
+  "lufs": {
+    "enabled": true,
+    "host": "0.0.0.0",
+    "port": 49152
+  },
+  "mobile": {
+    "enabled": true,
+    "host": "0.0.0.0",
+    "port": 53683,
+    "discoveryEnabled": true,
+    "serverId": "",
+    "pairingPin": "",
+    "pairingPinExpiresAt": 0,
+    "devices": [],
+    "token": ""
+  },
+  "scenario": {
+    "currentStageIndex": 0,
+    "currentStageChangedAt": 0,
+    "alertDelayMs": 5000,
+    "stages": [
+      {
+        "id": "standby",
+        "title": "예배 준비",
+        "note": "방송 시작 전 준비 상태를 확인합니다.",
+        "notify": false,
+        "checks": {
+          "scene": { "enabled": true, "expected": "예배준비" },
+          "audio": { "enabled": false, "expected": "" },
+          "recording": { "enabled": false, "expected": false }
+        }
+      }
+    ]
+  },
+  "notify": {
+    "kakao": {
+      "enabled": true,
+      "restApiKey": "Kakao-REST-API-키",
+      "accessToken": "OAuth로-발급받은-access_token",
+      "refreshToken": "OAuth로-발급받은-refresh_token"
+    },
+    "kakaoBiz": {
+      "enabled": false,
+      "apiKey": "SOLAPI-API-Key",
+      "apiSecret": "SOLAPI-API-Secret",
+      "pfId": "SOLAPI-카카오-채널-연동-ID",
+      "templateId": "SOLAPI-알림톡-템플릿-ID",
+      "from": "등록된-발신번호",
+      "recipients": "01012345678,01098765432",
+      "variableName": "#{message}",
+      "disableSms": true
+    },
+    "discord": {
+      "enabled": false,
+      "webhookUrl": ""
+    },
+    "telegram": {
+      "enabled": false,
+      "botToken": "",
+      "chatId": "",
+      "chatIds": "",
+      "autoDiscover": true
+    }
+  },
+  "rules": {
+    "audioSilenceSeconds": 5,
+    "audioSilenceDb": -65,
+    "audioSilenceStartupDelayMs": 60000,
+    "audioSilenceCooldownMs": 60000,
+    "audioPeakEnabled": false,
+    "audioPeakDb": -1,
+    "lufsEnabled": true,
+    "lufsHighThreshold": -14,
+    "lufsLowThreshold": -25,
+    "lufsDurationSeconds": 15,
+    "lufsStartupDelayMs": 60000,
+    "lufsRecoveryMargin": 1,
+    "lufsCooldownMs": 60000,
+    "bitrateMinKbps": 1500,
+    "bitrateStartupDelayMs": 60000,
+    "bitrateCooldownMs": 60000,
+    "droppedFramePctMax": 1.0,
+    "droppedFrameStartupDelayMs": 60000,
+    "droppedFrameCooldownMs": 60000
+  }
+}

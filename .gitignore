@@ -1,0 +1,23 @@
+node_modules/
+dist/
+out/
+build/
+release/
+
+# Electron-store / 사용자 로컬 설정
+*.local.json
+config/settings.json
+
+# 환경변수
+.env
+.env.local
+
+# OS / 에디터
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# 로그
+*.log
+npm-debug.log*

@@ -1,0 +1,61 @@
+{
+  "name": "broadcast-health-checker",
+  "version": "0.1.6",
+  "description": "OBS와 YouTube Live 상태를 동시에 모니터링하고 사고 발생 시 즉시 알림을 보내는 송출 감시 도구",
+  "main": "electron/main.js",
+  "author": "",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "node scripts/start.js",
+    "dev": "node scripts/start.js --inspect=5858",
+    "build": "electron-builder",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac",
+    "gen-icons": "node scripts/generate-icon.js"
+  },
+  "build": {
+    "appId": "com.streamwatcher.broadcasthealthchecker",
+    "productName": "STREAM MON",
+    "files": [
+      "electron/**/*",
+      "src/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/app-icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "STREAM MON"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "assets/app-icon.icns",
+      "category": "public.app-category.utilities"
+    },
+    "dmg": {
+      "title": "STREAM MON",
+      "contents": [
+        { "x": 130, "y": 220 },
+        { "x": 410, "y": 220, "type": "link", "path": "/Applications" }
+      ]
+    }
+  },
+  "dependencies": {
+    "axios": "^1.7.2",
+    "electron-store": "^8.2.0",
+    "googleapis": "^144.0.0",
+    "obs-websocket-js": "^5.0.6",
+    "uplot": "^1.6.32"
+  },
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^25.0.0"
+  }
+}
