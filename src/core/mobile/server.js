@@ -42,7 +42,7 @@ class MobileServer {
     if (settings.discoveryEnabled !== false) {
       this.discovery = new MobileDiscovery({
         getInfo: () => ({
-          name: `Stream Mon - ${os.hostname()}`,
+          name: `Stream Watcher - ${os.hostname()}`,
           hostName: os.hostname(),
           ip: this.getLocalIp(),
           port: this.settings.port,
@@ -98,7 +98,7 @@ class MobileServer {
       if (req.method === 'GET' && url.pathname === '/api/mobile/health') {
         return sendJson(res, 200, {
           ok: true,
-          name: 'Stream Mon',
+          name: 'Stream Watcher',
           version: getAppVersion(),
           schemaVersion: 1,
           serviceType: SERVICE_TYPE,

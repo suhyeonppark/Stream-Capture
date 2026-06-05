@@ -116,14 +116,18 @@ const defaults = {
   },
 };
 
-// 앱 이름 변경(productName: STREAM MON)으로 설정 폴더/파일명이 바뀌므로,
-// 기존 'Stream Watcher' 설정을 새 'Stream Mon'으로 1회 복사해 보존한다.
+// 앱 이름 변경(productName: STREAM WATCHER)으로 설정 폴더/파일명이 바뀌므로,
+// 기존 'Stream Mon' 설정을 새 'Stream Watcher'으로 1회 복사해 보존한다.
 function migrateLegacyConfig() {
   try {
-    const newFile = path.join(app.getPath('userData'), 'Stream Mon.json');
+    const newFile = path.join(app.getPath('userData'), 'Stream Watcher.json');
     if (fs.existsSync(newFile)) return; // 이미 마이그레이션됨
     const appData = app.getPath('appData');
     const candidates = [
+      path.join(appData, 'STREAM MON', 'Stream Mon.json'),
+      path.join(appData, 'Stream Mon', 'Stream Mon.json'),
+      path.join(appData, 'broadcast-health-checker', 'Stream Mon.json'),
+      path.join(app.getPath('userData'), 'Stream Mon.json'),
       path.join(appData, '방송 상태 모니터링', 'Stream Watcher.json'),
       path.join(appData, 'broadcast-health-checker', 'Stream Watcher.json'),
       path.join(app.getPath('userData'), 'Stream Watcher.json'),
@@ -137,7 +141,7 @@ function migrateLegacyConfig() {
 
 migrateLegacyConfig();
 
-const store = new Store({ defaults, name: 'Stream Mon' });
+const store = new Store({ defaults, name: 'Stream Watcher' });
 
 module.exports = {
   getAll: () => store.store,

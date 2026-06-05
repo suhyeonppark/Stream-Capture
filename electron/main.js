@@ -52,7 +52,7 @@ function createWindow() {
     height: 920,
     minWidth: 1280,
     minHeight: 820,
-    title: 'Stream Mon',
+    title: 'Stream Watcher',
     icon: path.join(__dirname, '..', 'assets', 'app-icon.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -257,7 +257,7 @@ function toMobileStatus() {
   return {
     schemaVersion: 1,
     app: {
-      name: 'Stream Mon',
+      name: 'Stream Watcher',
       siteName: mobileSettings.siteName || '나눔교회 송출 모니터링',
       version: packageJson.version || '0.1.0',
     },

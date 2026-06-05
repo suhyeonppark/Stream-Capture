@@ -1,6 +1,6 @@
 {
   "name": "broadcast-health-checker",
-  "version": "0.1.6",
+  "version": "1.0.0",
   "description": "OBS와 YouTube Live 상태를 동시에 모니터링하고 사고 발생 시 즉시 알림을 보내는 송출 감시 도구",
   "main": "electron/main.js",
   "author": "",
@@ -16,7 +16,7 @@
   },
   "build": {
     "appId": "com.streamwatcher.broadcasthealthchecker",
-    "productName": "STREAM MON",
+    "productName": "STREAM WATCHER",
     "files": [
       "electron/**/*",
       "src/**/*",
@@ -32,7 +32,7 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "STREAM MON"
+      "shortcutName": "STREAM WATCHER"
     },
     "mac": {
       "target": "dmg",
@@ -40,7 +40,7 @@
       "category": "public.app-category.utilities"
     },
     "dmg": {
-      "title": "STREAM MON",
+      "title": "STREAM WATCHER",
       "contents": [
         { "x": 130, "y": 220 },
         { "x": 410, "y": 220, "type": "link", "path": "/Applications" }

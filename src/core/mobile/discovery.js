@@ -62,7 +62,7 @@ class MobileDiscovery {
     if (!info?.port) return;
 
     const host = sanitizeDnsLabel(info.hostName || os.hostname() || 'stream-watcher');
-    const instanceLabel = sanitizeDnsLabel(info.name || `Stream Mon - ${host}`);
+    const instanceLabel = sanitizeDnsLabel(info.name || `Stream Watcher - ${host}`);
     const instance = `${instanceLabel}.${SERVICE_TYPE}`;
     const target = `${host}.local`;
     const ip = info.ip || getPrimaryLocalIp();
