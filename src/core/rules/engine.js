@@ -59,6 +59,7 @@ class RuleEngine {
     this.silenceFired = false;
     this.silenceLastFiredAt = 0;
     this.peakLastFiredAt = 0;
+    this.audioFirstSeenAt = null; // 오디오 신호를 처음 수신한 시각 (송출 무관 무음 감지용 앵커)
 
     this.lufsCondition = null;
     this.lufsConditionStartedAt = null;
@@ -293,28 +294,36 @@ class RuleEngine {
   }
 
   // 오디오 메터에서 최대 peak를 뽑아 무음/피크를 판정.
-  // 송출 중이거나 녹화 중일 때만 알림을 발사한다 (대기 상태는 의도된 무음일 수 있음).
+  // 송출/녹화 여부와 무관하게, OBS 오디오 신호가 들어오면 무음을 감지한다.
   checkAudio(state) {
-    if (!state.audioMeters || !state.audioMeters.length) return;
+    if (!state.audioMeters || !state.audioMeters.length) {
+      // 오디오 신호가 끊기면 앵커/카운터 초기화.
+      this.audioFirstSeenAt = null;
+      this.silenceStartedAt = null;
+      this.silenceFired = false;
+      return;
+    }
     if (!this.isAlertStage()) {
       this.silenceStartedAt = null;
       this.silenceFired = false;
       return;
     }
-    if (!state.streaming && !state.recording) {
-      // 송출/녹화가 아닐 땐 무음 카운터를 초기화하고 종료.
+
+    const now = state.ts ?? Date.now();
+    if (this.audioFirstSeenAt == null) this.audioFirstSeenAt = now;
+
+    // 시작 직후 오탐을 막기 위한 딜레이.
+    // 스트림/라이브 시작 시점이 있으면 그걸, 없으면 오디오 최초 수신 시점을 기준으로 한다.
+    const anchor = this.streamingStartedAt
+      ?? this.youtubeLiveDetectedAt
+      ?? this.audioFirstSeenAt;
+    if (now - anchor < Number(this.rules.audioSilenceStartupDelayMs || 0)) {
       this.silenceStartedAt = null;
       this.silenceFired = false;
       return;
     }
 
     const maxPeakDb = maxPeakDbAcrossInputs(state.audioMeters);
-    const now = state.ts ?? Date.now();
-    if (!this.isAfterYoutubeLiveDelay(now, this.rules.audioSilenceStartupDelayMs)) {
-      this.silenceStartedAt = null;
-      this.silenceFired = false;
-      return;
-    }
 
     // 피크
     if (this.rules.audioPeakEnabled && maxPeakDb >= this.rules.audioPeakDb) {
