@@ -31,6 +31,9 @@ const DEFAULT_RULES = {
   droppedFrameStartupDelayMs: 60000,
   droppedFrameCooldownMs: 300000,
   youtubeEventCooldownMs: 120000,
+  // 지속 상태 반복 알림: 송출/라이브가 다시 시작될 때까지 주기적으로 재알림.
+  streamOffRepeatMs: 60000,
+  youtubeOfflineRepeatMs: 60000,
 };
 
 class RuleEngine {
@@ -60,6 +63,8 @@ class RuleEngine {
     this.silenceLastFiredAt = 0;
     this.peakLastFiredAt = 0;
     this.audioFirstSeenAt = null; // 오디오 신호를 처음 수신한 시각 (송출 무관 무음 감지용 앵커)
+    this.obsOffLastFiredAt = 0; // OBS 송출 꺼짐 반복 알림 마지막 발사 시각
+    this.youtubeOfflineLastFiredAt = 0; // YouTube 오프라인 반복 알림 마지막 발사 시각
 
     this.lufsCondition = null;
     this.lufsConditionStartedAt = null;
@@ -103,6 +108,7 @@ class RuleEngine {
     this.checkAudio(state);
     this.checkBitrate(state);
     this.checkDroppedFrames(state);
+    this.checkStreamOff(state);
   }
 
   ingestLufs(state) {
@@ -142,6 +148,7 @@ class RuleEngine {
       this.youtubeLiveDetectedAt = now;
       this.completedStreamReport = null;
       this.resetQualityStates();
+      this.youtubeOfflineLastFiredAt = 0; // 라이브 시작 → 오프라인 반복 알림 카운터 리셋
       this.fire('YOUTUBE_LIVE_DETECTED', {
         ts: now,
         url: state.url,
@@ -186,12 +193,15 @@ class RuleEngine {
         }
       }
     }
+
+    this.checkYoutubeOffline(state);
   }
 
   handleStreamStarted(state) {
     this.streamingStartedAt = state.ts ?? Date.now();
     this.completedStreamReport = null;
     this.resetQualityStates();
+    this.obsOffLastFiredAt = 0; // 송출 시작 → 꺼짐 반복 알림 카운터 리셋
     this.streamSession = this.createStreamSession(state);
     this.fire('OBS_STREAM_STARTED', { ts: state.ts }, { dedupeMs: 10000 });
   }
@@ -202,6 +212,8 @@ class RuleEngine {
     this.streamingStartedAt = null;
     this.completedStreamReport = report;
     this.resetQualityStates();
+    // 종료 직후 "꺼짐" 반복 알림이 바로 겹치지 않도록, 첫 반복은 한 주기 뒤부터.
+    this.obsOffLastFiredAt = state.ts ?? Date.now();
     this.fire('OBS_STREAM_STOPPED', { ts: state.ts }, { dedupeMs: 10000 });
     if (report) this.fire('OBS_STREAM_REPORT', { ts: state.ts, report }, { dedupeMs: 10000 });
   }
@@ -514,6 +526,32 @@ class RuleEngine {
     } else if (this.droppedFrameAlertActive && droppedPct <= maxPct / 2) {
       this.droppedFrameAlertActive = false;
       this.fire('OBS_DROPPED_FRAMES_RECOVERED', { ts: now, droppedPct: round1(droppedPct) });
+    }
+  }
+
+  // OBS가 연결돼 상태가 들어오는데 송출이 꺼져 있으면, 다시 켤 때까지 주기적으로 반복 알림.
+  checkStreamOff(state) {
+    if (!this.isAlertStage()) { this.obsOffLastFiredAt = 0; return; }
+    if (state.streaming) { this.obsOffLastFiredAt = 0; return; }
+    const repeat = Number(this.rules.streamOffRepeatMs || 0);
+    if (repeat <= 0) return;
+    const now = state.ts ?? Date.now();
+    if (!this.obsOffLastFiredAt || now - this.obsOffLastFiredAt >= repeat) {
+      this.obsOffLastFiredAt = now;
+      this.fire('OBS_STREAM_OFF', { ts: now });
+    }
+  }
+
+  // YouTube가 라이브가 아니면, 라이브가 시작될 때까지 주기적으로 반복 알림.
+  checkYoutubeOffline(state) {
+    if (!this.isAlertStage()) { this.youtubeOfflineLastFiredAt = 0; return; }
+    if (state.live) { this.youtubeOfflineLastFiredAt = 0; return; }
+    const repeat = Number(this.rules.youtubeOfflineRepeatMs || 0);
+    if (repeat <= 0) return;
+    const now = state.ts ?? Date.now();
+    if (!this.youtubeOfflineLastFiredAt || now - this.youtubeOfflineLastFiredAt >= repeat) {
+      this.youtubeOfflineLastFiredAt = now;
+      this.fire('YOUTUBE_OFFLINE', { ts: now });
     }
   }
 

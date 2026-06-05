@@ -692,6 +692,8 @@ function recoveryClears(type) {
     case 'OBS_DROPPED_FRAMES_RECOVERED': return ['OBS_DROPPED_FRAMES_HIGH'];
     case 'YOUTUBE_HEALTH_RECOVERED': return ['YOUTUBE_HEALTH_BAD'];
     case 'YOUTUBE_LIVE_ENDED': return ['YOUTUBE_HEALTH_BAD', 'YOUTUBE_CONFIG_ISSUE'];
+    case 'OBS_STREAM_STARTED': return ['OBS_STREAM_OFF']; // 송출 시작 → 꺼짐 반복 알림 제거
+    case 'YOUTUBE_LIVE_DETECTED': return ['YOUTUBE_OFFLINE']; // 라이브 시작 → 오프라인 반복 알림 제거
     case 'OBS_STREAM_STOPPED':
       return ['OBS_BITRATE_LOW', 'OBS_DROPPED_FRAMES_HIGH', 'OBS_AUDIO_SILENCE', 'OBS_AUDIO_PEAK'];
     default: return [];
@@ -759,8 +761,9 @@ function getMobileAlertLevel(type, alert) {
     'OBS_DROPPED_FRAMES_HIGH',
     'YOUTUBE_HEALTH_BAD',
     'YOUTUBE_CONFIG_ISSUE',
+    'OBS_STREAM_OFF',
   ].includes(type)) return 'critical';
-  if (['OBS_AUDIO_PEAK', 'LUFS_TOO_LOUD', 'LUFS_TOO_QUIET'].includes(type)) return 'warn';
+  if (['OBS_AUDIO_PEAK', 'LUFS_TOO_LOUD', 'LUFS_TOO_QUIET', 'YOUTUBE_OFFLINE'].includes(type)) return 'warn';
   return 'info';
 }
 
@@ -777,6 +780,8 @@ function getMobileAlertTitle(type, alert) {
   const map = {
     OBS_STREAM_STARTED: '송출 시작',
     OBS_STREAM_STOPPED: '송출 종료',
+    OBS_STREAM_OFF: '송출 꺼짐',
+    YOUTUBE_OFFLINE: 'YouTube 오프라인',
     OBS_RECORD_STARTED: '녹화 시작',
     OBS_RECORD_STOPPED: '녹화 종료',
     OBS_AUDIO_SILENCE: '오디오 무음',
@@ -799,6 +804,8 @@ function getMobileAlertTitle(type, alert) {
 }
 
 function getMobileAlertMessage(type, alert) {
+  if (type === 'OBS_STREAM_OFF') return 'OBS 송출이 꺼져 있습니다';
+  if (type === 'YOUTUBE_OFFLINE') return 'YouTube 라이브가 아닙니다';
   if (type === 'OBS_AUDIO_SILENCE') return '오디오 신호가 없습니다';
   if (type === 'OBS_AUDIO_PEAK') return '오디오 피크 발생';
   if (type === 'OBS_BITRATE_LOW') return `현재 ${alert?.bitrateKbps ?? '-'} kbps`;
@@ -818,6 +825,8 @@ function isRecoveryAlert(type) {
     'YOUTUBE_HEALTH_RECOVERED',
     'YOUTUBE_LIVE_ENDED',
     'OBS_STREAM_STOPPED',
+    'OBS_STREAM_STARTED', // 송출 꺼짐 반복 알림을 해제
+    'YOUTUBE_LIVE_DETECTED', // 오프라인 반복 알림을 해제
   ].includes(type);
 }
 
