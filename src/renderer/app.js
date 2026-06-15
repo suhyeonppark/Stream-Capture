@@ -977,6 +977,8 @@ const ALERT_HISTORY_KEY = 'alert.history';
 const ALERT_HISTORY_LIMIT = 500;
 const ALERT_SEVERITY_BY_TYPE = {
   OBS_AUDIO_SILENCE: '긴급',
+  OBS_STREAM_OFF: '긴급',
+  YOUTUBE_OFFLINE: '오류',
   OBS_AUDIO_PEAK: '오류',
   OBS_BITRATE_LOW: '오류',
   OBS_DROPPED_FRAMES_HIGH: '오류',
@@ -1112,6 +1114,7 @@ function formatAlertLabel(alert) {
   const map = {
     OBS_STREAM_STARTED: 'OBS 송출 시작',
     OBS_STREAM_STOPPED: 'OBS 송출 종료',
+    OBS_STREAM_OFF: 'OBS 송출 꺼짐',
     OBS_STREAM_REPORT: 'OBS 송출 리포트',
     OBS_RECORD_STARTED: '녹화 시작',
     OBS_RECORD_STOPPED: '녹화 종료',
@@ -1126,6 +1129,7 @@ function formatAlertLabel(alert) {
     LUFS_RECOVERED: '적정 LUFS 복구',
     YOUTUBE_LIVE_DETECTED: 'YouTube 라이브 시작',
     YOUTUBE_LIVE_ENDED: 'YouTube 라이브 종료',
+    YOUTUBE_OFFLINE: 'YouTube 오프라인',
     YOUTUBE_HEALTH_BAD: 'YouTube Status 이상',
     YOUTUBE_HEALTH_RECOVERED: 'YouTube Status 복구',
     YOUTUBE_CONFIG_ISSUE: 'YT 설정 이슈',

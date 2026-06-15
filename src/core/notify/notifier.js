@@ -6,6 +6,7 @@ const TelegramChannel = require('./telegram');
 const MESSAGES = {
   OBS_STREAM_STARTED: 'OBS 송출이 시작되었습니다.',
   OBS_STREAM_STOPPED: 'OBS 송출이 종료되었습니다.',
+  OBS_STREAM_OFF: 'OBS 송출이 꺼져 있습니다. 송출을 시작하세요.',
   OBS_STREAM_REPORT: '방송 리포트',
   OBS_RECORD_STARTED: '녹화가 시작되었습니다.',
   OBS_RECORD_STOPPED: '녹화가 종료되었습니다.',
@@ -20,6 +21,7 @@ const MESSAGES = {
   LUFS_RECOVERED: '적정 LUFS로 복구되었습니다.',
   YOUTUBE_LIVE_DETECTED: 'YouTube 라이브 방송이 시작되었습니다.',
   YOUTUBE_LIVE_ENDED: 'YouTube 라이브 방송이 종료되었습니다.',
+  YOUTUBE_OFFLINE: 'YouTube 라이브가 감지되지 않습니다. 라이브 상태를 확인하세요.',
   YOUTUBE_HEALTH_BAD: 'YouTube 스트림 헬스 이상이 감지되었습니다.',
   YOUTUBE_HEALTH_RECOVERED: 'YouTube 스트림 헬스가 정상으로 복구되었습니다.',
   YOUTUBE_CONFIG_ISSUE: 'YouTube 스트림 설정 이슈가 발생했습니다.',
@@ -27,6 +29,8 @@ const MESSAGES = {
 
 const SEVERITY_BY_TYPE = {
   OBS_AUDIO_SILENCE: '[긴급]',
+  OBS_STREAM_OFF: '[긴급]',
+  YOUTUBE_OFFLINE: '[오류]',
   OBS_AUDIO_PEAK: '[오류]',
   OBS_BITRATE_LOW: '[오류]',
   OBS_DROPPED_FRAMES_HIGH: '[오류]',
