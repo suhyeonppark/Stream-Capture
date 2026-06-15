@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain, Tray, Menu, nativeImage, dialog } = require('electron');
 
 // userData 경로(%APPDATA%\<name>)를 결정하므로 다른 모듈 require보다 먼저 호출해야 함
-app.setName('Stream Watcher');
+app.setName('Stream Capture');
 
 const fs = require('fs');
 const path = require('path');
@@ -52,7 +52,7 @@ function createWindow() {
     height: 920,
     minWidth: 1280,
     minHeight: 820,
-    title: 'Stream Watcher',
+    title: 'Stream Capture',
     icon: path.join(__dirname, '..', 'assets', 'app-icon.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),

@@ -116,21 +116,22 @@ const defaults = {
   },
 };
 
-// 앱 이름 변경(productName: STREAM WATCHER)으로 설정 폴더/파일명이 바뀌므로,
-// 기존 'Stream Mon' 설정을 새 'Stream Watcher'으로 1회 복사해 보존한다.
+// 앱 이름이 바뀌면(productName/app name) 설정 폴더·파일명도 바뀌므로,
+// 직전 이름들('Stream Watcher', 'Stream Mon')의 설정을 새 'Stream Capture'로 1회 복사해 보존한다.
 function migrateLegacyConfig() {
   try {
-    const newFile = path.join(app.getPath('userData'), 'Stream Watcher.json');
+    const newFile = path.join(app.getPath('userData'), 'Stream Capture.json');
     if (fs.existsSync(newFile)) return; // 이미 마이그레이션됨
     const appData = app.getPath('appData');
     const candidates = [
+      // 직전 이름: Stream Watcher
+      path.join(appData, 'Stream Watcher', 'Stream Watcher.json'),
+      path.join(appData, '방송 상태 모니터링', 'Stream Watcher.json'),
+      path.join(appData, 'broadcast-health-checker', 'Stream Watcher.json'),
+      // 그 이전 이름: Stream Mon
       path.join(appData, 'STREAM MON', 'Stream Mon.json'),
       path.join(appData, 'Stream Mon', 'Stream Mon.json'),
       path.join(appData, 'broadcast-health-checker', 'Stream Mon.json'),
-      path.join(app.getPath('userData'), 'Stream Mon.json'),
-      path.join(appData, '방송 상태 모니터링', 'Stream Watcher.json'),
-      path.join(appData, 'broadcast-health-checker', 'Stream Watcher.json'),
-      path.join(app.getPath('userData'), 'Stream Watcher.json'),
     ];
     const src = candidates.find((p) => fs.existsSync(p));
     if (!src) return;
@@ -141,7 +142,7 @@ function migrateLegacyConfig() {
 
 migrateLegacyConfig();
 
-const store = new Store({ defaults, name: 'Stream Watcher' });
+const store = new Store({ defaults, name: 'Stream Capture' });
 
 function isPlainObject(value) {
   return value != null && typeof value === 'object' && !Array.isArray(value);

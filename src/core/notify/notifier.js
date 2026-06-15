@@ -68,7 +68,7 @@ class Notifier {
   async test(channelName) {
     const ch = this.channels.find((c) => c.name === channelName);
     if (!ch) throw new Error(`알림 채널을 찾을 수 없습니다: ${channelName}`);
-    const result = await ch.send('[테스트] Stream Watcher 알림 채널 연결 확인');
+    const result = await ch.send('[테스트] Stream Capture 알림 채널 연결 확인');
     return { ok: true, ...result };
   }
 

@@ -16,7 +16,7 @@
   },
   "build": {
     "appId": "com.streamwatcher.broadcasthealthchecker",
-    "productName": "STREAM WATCHER",
+    "productName": "STREAM CAPTURE",
     "files": [
       "electron/**/*",
       "src/**/*",
@@ -32,7 +32,7 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "STREAM WATCHER"
+      "shortcutName": "STREAM CAPTURE"
     },
     "mac": {
       "target": "dmg",
@@ -40,7 +40,7 @@
       "category": "public.app-category.utilities"
     },
     "dmg": {
-      "title": "STREAM WATCHER",
+      "title": "STREAM CAPTURE",
       "contents": [
         { "x": 130, "y": 220 },
         { "x": 410, "y": 220, "type": "link", "path": "/Applications" }

@@ -1,4 +1,4 @@
-# Stream Watcher / 방송 상태 모니터링
+# Stream Capture / 방송 상태 모니터링
 
 OBS와 YouTube Live 상태를 동시에 감시하고, 방송 사고 징후가 보이면 Telegram, Discord, 카카오톡 채널로 알림을 보내는 Electron 데스크탑 앱이다.
 
@@ -520,10 +520,10 @@ JSON이 아닌 텍스트도 일부 파싱한다. 예를 들어 `shortTerm: -14.2
 
 Android / iOS를 함께 지원하기 위해 Flutter 앱을 별도 companion 앱으로 두는 방향을 검토한다.
 
-모바일 앱은 OBS, YouTube, LUFS를 직접 감시하지 않는다. 송출 PC에서 실행 중인 Stream Watcher가 내부망 모바일 API를 열고, Flutter 앱은 그 상태를 읽어서 현장용 경보 화면으로 표시한다.
+모바일 앱은 OBS, YouTube, LUFS를 직접 감시하지 않는다. 송출 PC에서 실행 중인 Stream Capture가 내부망 모바일 API를 열고, Flutter 앱은 그 상태를 읽어서 현장용 경보 화면으로 표시한다.
 
 ```text
-Stream Watcher 데스크탑 앱
+Stream Capture 데스크탑 앱
   ├─ OBS / YouTube / LUFS 수집
   ├─ 룰 엔진으로 이상 상태 판단
   └─ 내부망 모바일 API 제공

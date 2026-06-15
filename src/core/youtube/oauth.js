@@ -108,7 +108,7 @@ function waitForOAuthCode(server, redirect) {
         }
 
         res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-        res.end('<h1>Google authentication complete.</h1><p>You can close this window and return to Stream Watcher.</p>');
+        res.end('<h1>Google authentication complete.</h1><p>You can close this window and return to Stream Capture.</p>');
         clearTimeout(timeout);
         resolve(code);
       } catch (e) {
