@@ -17,6 +17,10 @@ class MobileServer {
     this.discovery = null;
     this.eventClients = new Set();
     this.pingTimer = null;
+    // status 브로드캐스트 throttle: 짧은 시간에 몰린 호출을 합쳐 최대 ~2Hz로만 전송.
+    this.statusThrottleMs = 500;
+    this.lastStatusBroadcastAt = 0;
+    this.statusBroadcastTimer = null;
   }
 
   async start(settings = {}) {
@@ -61,6 +65,8 @@ class MobileServer {
   async stop() {
     if (this.pingTimer) clearInterval(this.pingTimer);
     this.pingTimer = null;
+    if (this.statusBroadcastTimer) clearTimeout(this.statusBroadcastTimer);
+    this.statusBroadcastTimer = null;
     for (const client of this.eventClients) {
       try { client.end(); } catch {}
     }
@@ -209,7 +215,21 @@ class MobileServer {
 
   broadcastStatus() {
     if (!this.eventClients.size) return;
-    this.broadcast('status', this.getStatus?.() || {});
+    const now = Date.now();
+    const elapsed = now - this.lastStatusBroadcastAt;
+    if (elapsed >= this.statusThrottleMs) {
+      this.lastStatusBroadcastAt = now;
+      this.broadcast('status', this.getStatus?.() || {});
+      return;
+    }
+    // throttle 구간 내 호출이면 마지막 상태가 누락되지 않도록 트레일링 전송을 예약.
+    if (this.statusBroadcastTimer) return;
+    this.statusBroadcastTimer = setTimeout(() => {
+      this.statusBroadcastTimer = null;
+      if (!this.eventClients.size) return;
+      this.lastStatusBroadcastAt = Date.now();
+      this.broadcast('status', this.getStatus?.() || {});
+    }, this.statusThrottleMs - elapsed);
   }
 
   sendEvent(res, type, payload) {

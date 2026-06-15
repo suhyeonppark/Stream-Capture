@@ -20,6 +20,7 @@ class YoutubeClient {
         if (tokens.access_token && onTokenRefresh) {
           onTokenRefresh({
             accessToken: tokens.access_token,
+            refreshToken: tokens.refresh_token || '',
             expiryDate: tokens.expiry_date || 0,
             expiresIn: tokens.expiry_date ? Math.max(0, Math.floor((tokens.expiry_date - Date.now()) / 1000)) : 0,
           });

@@ -38,11 +38,14 @@ class ObsMonitor extends EventEmitter {
     });
 
     // OBS WebSocket v5: high-volume meter 이벤트. 약 10Hz로 들어옴.
+    // 매 미터마다 전체 state를 emit하면 IPC 직렬화·룰엔진·모바일 브로드캐스트가 10Hz로 돌아
+    // 버벅임의 주원인이 된다. 따라서 가벼운 'meters' 이벤트로만 내보내고(레벨 막대 표시용),
+    // 캐시만 갱신해 다음 poll() state에 최신 미터가 반영되도록 한다.
     this.client.on('InputVolumeMeters', (data) => {
       if (this.offlineEmitted) return;
       if (!this.lastState || typeof this.lastState.streaming !== 'boolean') return;
-      this.lastState = { ...this.lastState, audioMeters: data.inputs, ts: Date.now() };
-      this.emit('state', this.lastState);
+      this.lastState.audioMeters = data.inputs;
+      this.emit('meters', { audioMeters: data.inputs, ts: Date.now() });
     });
 
     this.timer = setInterval(() => this.poll(), this.settings.pollIntervalMs);

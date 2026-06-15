@@ -29,6 +29,7 @@ contextBridge.exposeInMainWorld('api', {
   hideWindow: () => ipcRenderer.invoke('window:hide'),
 
   onObsState: (cb) => ipcRenderer.on('obs:state', (_, s) => cb(s)),
+  onObsMeters: (cb) => ipcRenderer.on('obs:meters', (_, m) => cb(m)),
   onYoutubeState: (cb) => ipcRenderer.on('youtube:state', (_, s) => cb(s)),
   onLufsState: (cb) => ipcRenderer.on('lufs:state', (_, s) => cb(s)),
   onConfigChanged: (cb) => ipcRenderer.on('config:changed', (_, cfg) => cb(cfg)),

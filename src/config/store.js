@@ -143,13 +143,30 @@ migrateLegacyConfig();
 
 const store = new Store({ defaults, name: 'Stream Watcher' });
 
+function isPlainObject(value) {
+  return value != null && typeof value === 'object' && !Array.isArray(value);
+}
+
+// 중첩 객체는 재귀 병합, 배열/원시값/null은 그대로 교체.
+// (electron-store의 set은 키를 통째로 덮어쓰기 때문에, 부분 저장 시
+//  youtube.oauth 토큰·mobile.devices·notify 토큰 등 폼에 없는 필드가 사라지는 것을 막는다.)
+function deepMerge(target, source) {
+  if (!isPlainObject(source)) return source;
+  const base = isPlainObject(target) ? target : {};
+  const out = { ...base };
+  for (const [k, v] of Object.entries(source)) {
+    out[k] = isPlainObject(v) ? deepMerge(base[k], v) : v;
+  }
+  return out;
+}
+
 module.exports = {
   getAll: () => store.store,
   get: (key) => store.get(key),
   set: (key, value) => store.set(key, value),
   update: (partial) => {
     for (const [k, v] of Object.entries(partial)) {
-      store.set(k, v);
+      store.set(k, deepMerge(store.get(k), v));
     }
     return store.store;
   },

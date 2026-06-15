@@ -46,7 +46,19 @@
       "PowerShell($env:ELECTRON_RUN_AS_NODE=$null; Remove-Item Env:ELECTRON_RUN_AS_NODE -ErrorAction SilentlyContinue; npm run build:win 2>&1 | Select-Object -Last 80)",
       "PowerShell(Get-ChildItem \"c:\\\\Users\\\\parks\\\\OneDrive\\\\개인개발\\\\Stream Watcher\\\\dist\\\\\" | Select-Object Name, @{N='Size\\(MB\\)';E={[math]::Round\\($_.Length/1MB,2\\)}}, LastWriteTime | Format-Table -AutoSize)",
       "PowerShell(Get-NetUDPEndpoint -LocalPort 49152 -ErrorAction SilentlyContinue | ForEach-Object { $p = Get-Process -Id $_.OwningProcess -ErrorAction SilentlyContinue; [PSCustomObject]@{ LocalAddress=$_.LocalAddress; Port=$_.LocalPort; PID=$_.OwningProcess; Process=$p.ProcessName } } | Format-Table -AutoSize)",
-      "PowerShell(Get-ChildItem \"c:\\\\Users\\\\parks\\\\OneDrive\\\\개인개발\\\\Stream Watcher\\\\dist\\\\방송 상태 모니터링 Setup 0.1.0.exe\" | Select-Object Name, @{N='Size\\(MB\\)';E={[math]::Round\\($_.Length/1MB,2\\)}}, LastWriteTime | Format-Table -AutoSize)"
+      "PowerShell(Get-ChildItem \"c:\\\\Users\\\\parks\\\\OneDrive\\\\개인개발\\\\Stream Watcher\\\\dist\\\\방송 상태 모니터링 Setup 0.1.0.exe\" | Select-Object Name, @{N='Size\\(MB\\)';E={[math]::Round\\($_.Length/1MB,2\\)}}, LastWriteTime | Format-Table -AutoSize)",
+      "Bash(git add *)",
+      "Bash(git commit -m '@ *)",
+      "Bash(git commit --amend -m '@ *)",
+      "Bash(git commit *)",
+      "Bash(rm .git/COMMIT_MSG_TMP.txt)",
+      "Bash(git push *)",
+      "Bash(Out-String -Stream)",
+      "Bash(Select-Object -Last 60)",
+      "PowerShell(npm run build:win 2>&1)",
+      "PowerShell(Get-ChildItem dist -File | Select-Object Name, @{N='Size\\(MB\\)';E={[math]::Round\\($_.Length/1MB,1\\)}}, LastWriteTime | Format-Table -AutoSize)",
+      "Bash(node --check src/core/mobile/server.js)",
+      "Bash(node --check src/core/youtube/client.js)"
     ]
   }
 }

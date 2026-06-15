@@ -202,9 +202,18 @@ function pushChartPoint(ts, bitrateKbps, droppedTotal) {
   chart.setData([chartBuf.t, chartBuf.bitrate, chartBuf.dropDelta]);
 }
 
+// 타일은 HTML에 정적으로 존재하므로 매 state마다 querySelectorAll 하지 않고 캐싱한다.
+let cachedTiles = null;
+function getTiles() {
+  if (!cachedTiles || !cachedTiles.length) {
+    cachedTiles = Array.from(document.querySelectorAll('.tile'));
+  }
+  return cachedTiles;
+}
+
 // ── OBS 상태 → 타일 갱신 ──────────────────────────────────────────
 function applyObsState(s) {
-  const tiles = document.querySelectorAll('.tile');
+  const tiles = getTiles();
   for (const tile of tiles) {
     const key = tile.dataset.tile;
     const el = tile.querySelector(`[data-key="${key}"]`);
@@ -276,7 +285,7 @@ function classifyStreamStatus(v) {
 }
 
 function applyYoutubeState(s) {
-  const tiles = document.querySelectorAll('.tile');
+  const tiles = getTiles();
   for (const tile of tiles) {
     const key = tile.dataset.tile;
     const el = tile.querySelector(`[data-key="${key}"]`);
@@ -657,6 +666,7 @@ function renderScenarioRail() {
   });
 }
 
+let lastChecksSig = null;
 function renderScenarioChecks() {
   const stages = getScenarioStages();
   scenarioState.stageIndex = Math.max(0, Math.min(stages.length - 1, scenarioState.stageIndex));
@@ -669,6 +679,14 @@ function renderScenarioChecks() {
   renderScenarioRail();
 
   const checks = makeScenarioChecks();
+  // 체크 결과가 직전과 동일하면 DOM 재구축(요소 생성 + SVG 파싱)을 건너뛴다.
+  const checksSig = checks.map((c) => `${c.id}${c.status}${c.label}${c.detail}`).join('');
+  if (checksSig === lastChecksSig) {
+    updateScenarioSignals();
+    return;
+  }
+  lastChecksSig = checksSig;
+
   const grid = document.getElementById('scenario-check-grid');
   if (grid) {
     grid.textContent = '';
@@ -1146,6 +1164,11 @@ window.api.onObsState((s) => {
   }
   applyObsState(s);
   renderScenarioChecks();
+});
+// 오디오 레벨 막대는 ~10Hz 경량 메시지로 부드럽게 갱신한다. (전체 state 리렌더와 분리)
+window.api.onObsMeters?.((m) => {
+  if (scenarioState.obs) scenarioState.obs.audioMeters = m.audioMeters;
+  applyAudioMeters(m.audioMeters || []);
 });
 window.api.onYoutubeState((s) => {
   scenarioState.youtube = s;

@@ -989,17 +989,25 @@ async function setupMonitors() {
     pushState('obs:state', s);
     mobileServer?.broadcastStatus?.();
   });
+  // 오디오 레벨 미터 전용 경량 경로(~10Hz). 룰엔진/모바일 브로드캐스트는 거치지 않고
+  // 부드러운 막대 표시를 위해 렌더러로만 전달한다. 룰 판정은 1Hz poll state에서 처리된다.
+  obsMonitor.on('meters', (m) => {
+    if (latestObsState) latestObsState.audioMeters = m.audioMeters;
+    pushState('obs:meters', m);
+  });
   obsMonitor.on('error', (e) => {
     latestObsState = { ...(latestObsState || {}), error: e.message, ts: Date.now() };
     pushState('obs:error', { message: e.message });
   });
 
   youtubeMonitor = new YoutubeMonitor(settings.youtube, {
-    onTokenRefresh: ({ accessToken, expiresIn, expiryDate }) => {
+    onTokenRefresh: ({ accessToken, refreshToken, expiresIn, expiryDate }) => {
       const cur = configStore.getAll();
       const newOauth = {
         ...cur.youtube.oauth,
         accessToken,
+        // Google이 refresh_token을 회전(rotate)해 새로 내려주면 보존한다. 없으면 기존 것 유지.
+        refreshToken: refreshToken || cur.youtube.oauth?.refreshToken || '',
         tokenAcquiredAt: Date.now(),
         expiresIn: expiresIn || cur.youtube.oauth?.expiresIn || 0,
         expiryDate: expiryDate || cur.youtube.oauth?.expiryDate || 0,
